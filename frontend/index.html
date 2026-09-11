@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WakeVerify | The Unstoppable AI Accountability Alarm</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Custom CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#0a0c10] text-gray-100 antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-gray-800/80 bg-[#10141e]/90 backdrop-blur sticky top-0 z-30 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-rose-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+            WakeVerify
+          </h1>
+          <p class="text-xs text-gray-400">AI-Enforced Accountability Alarm</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- AI Engine Status Pill -->
+        <div id="engineStatusPill" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/80 border border-gray-700 text-xs text-gray-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="engineStatusText">Checking AI Engine...</span>
+        </div>
+
+        <!-- Settings Button -->
+        <button onclick="openSettingsModal()" class="px-3 py-2 rounded-lg bg-gray-800/60 hover:bg-gray-800 border border-gray-700/80 text-gray-300 hover:text-white text-sm transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Settings
+        </button>
+
+        <!-- Test Alarm Trigger Button -->
+        <button onclick="triggerImmediateAlarm()" class="px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-medium text-sm shadow-lg shadow-red-600/30 transition flex items-center gap-2">
+          <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          ⚡ Ring Alarm Now
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- Big Live Digital Clock Display -->
+    <section class="mb-10 text-center py-8 rounded-3xl glass-panel relative overflow-hidden">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-rose-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <p id="clockDate" class="text-sm font-medium text-indigo-400 tracking-wider uppercase mb-2">Loading Date...</p>
+      <div class="inline-flex items-baseline gap-3">
+        <h2 id="clockTime" class="text-6xl md:text-8xl font-black font-mono tracking-tight bg-gradient-to-b from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
+          00:00:00
+        </h2>
+        <span id="clockAmPm" class="text-xl md:text-2xl font-bold text-gray-500 font-mono">--</span>
+      </div>
+      <p id="nextAlarmNotice" class="text-sm text-gray-400 mt-3 flex items-center justify-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500"></span>
+        No alarms currently scheduled
+      </p>
+    </section>
+
+    <!-- Content Grid: Alarms on Left, History & Streak on Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- Left Column: Alarm Management (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Set New Alarm Card -->
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-indigo-600/20 text-indigo-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </span>
+              Schedule Smart Alarm
+            </h3>
+            <span class="text-xs text-gray-400">Never stops without proof</span>
+          </div>
+
+          <!-- Quick Goal Presets -->
+          <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Quick Presets</label>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="applyPreset('06:00', 'Gym & Workout', 'Hit the gym for strength training', 'Running shoes or dumbbells', 'either')" class="px-3 py-1.5 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-xs font-medium text-gray-300 transition">
+                🏋️ Morning Gym
+              </button>
+              <button onclick="applyPreset('07:00', 'Hydrate & Fresh', 'Wash face, drink 500ml water and brush teeth', 'Bathroom sink with toothbrush', 'both')" class="px-3 py-1.5 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-xs font-medium text-gray-300 transition">
+                🪥 Bathroom Sink
+              </button>
+              <button onclick="applyPreset('08:00', 'Deep Study / Code', 'Start deep focus work on programming project', 'Laptop screen or open book on desk', 'reason')" class="px-3 py-1.5 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-xs font-medium text-gray-300 transition">
+                💻 Deep Work
+              </button>
+            </div>
+          </div>
+
+          <form id="alarmForm" onsubmit="handleCreateAlarm(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1">Alarm Time (24h format)</label>
+                <input type="time" id="alarmTime" required class="w-full px-4 py-2.5 rounded-xl bg-gray-900/90 border border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white font-mono text-lg transition outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1">Alarm Label</label>
+                <input type="text" id="alarmLabel" required placeholder="e.g. Morning Workout" class="w-full px-4 py-2.5 rounded-xl bg-gray-900/90 border border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white text-sm transition outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-400 mb-1">
+                🧠 Alarm Purpose / Reason <span class="text-indigo-400 font-semibold">(AI will test this!)</span>
+              </label>
+              <textarea id="alarmReason" rows="2" required placeholder="Why are you waking up? e.g. 'I need to hit the gym for leg day before my 9am meeting'" class="w-full px-4 py-2.5 rounded-xl bg-gray-900/90 border border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white text-sm transition outline-none resize-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1">Required Verification Method</label>
+                <select id="dismissMode" onchange="togglePhotoTargetInput()" class="w-full px-4 py-2.5 rounded-xl bg-gray-900/90 border border-gray-700 focus:border-indigo-500 text-white text-sm transition outline-none">
+                  <option value="either">⚡ Either (Reason OR Photo)</option>
+                  <option value="reason">🧠 Reason Explanation Only</option>
+                  <option value="photo">📸 Visual Photo Proof Only</option>
+                  <option value="both">🔒 Hardcore (Must Pass BOTH)</option>
+                </select>
+              </div>
+
+              <div id="photoTargetContainer">
+                <label class="block text-xs font-medium text-gray-400 mb-1">
+                  📸 Target Photo Proof <span class="text-rose-400 font-semibold">(Must capture this)</span>
+                </label>
+                <input type="text" id="photoTarget" placeholder="e.g. Running shoes, Sink, Coffee maker" value="Running shoes" class="w-full px-4 py-2.5 rounded-xl bg-gray-900/90 border border-gray-700 focus:border-indigo-500 text-white text-sm transition outline-none">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-white text-sm shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Schedule This Alarm
+            </button>
+          </form>
+        </div>
+
+        <!-- Scheduled Alarms List -->
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              Active Alarms
+            </h3>
+            <span id="alarmCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-gray-800 text-gray-300 font-mono">0 active</span>
+          </div>
+
+          <div id="alarmsList" class="space-y-3">
+            <p class="text-sm text-gray-500 text-center py-8">No scheduled alarms. Create one above!</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: History & Streak (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- Accountability Stats -->
+        <div class="glass-panel rounded-2xl p-6">
+          <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <span>🔥</span> Wake-up Consistency & Proofs
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-gray-900/60 border border-gray-800">
+              <p class="text-xs text-gray-400 font-medium">Verified Wakeups</p>
+              <p id="statTotalProofs" class="text-2xl font-black font-mono text-indigo-400 mt-1">0</p>
+            </div>
+            <div class="p-4 rounded-xl bg-gray-900/60 border border-gray-800">
+              <p class="text-xs text-gray-400 font-medium">Snooze Cheats</p>
+              <p class="text-2xl font-black font-mono text-emerald-400 mt-1">0</p>
+              <span class="text-[10px] text-gray-500">Impossible to snooze</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof History Feed -->
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>📋</span> Verification Audit Log
+            </h3>
+            <span class="text-xs text-gray-400">Recent Proofs</span>
+          </div>
+          <div id="historyList" class="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+            <p class="text-sm text-gray-500 text-center py-8">No verified wakeups recorded yet.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- EMERGENCY ACTIVE RINGING ALARM MODAL (UNSTOPPABLE INTERLOCK) -->
+  <!-- ========================================================================= -->
+  <div id="alarmOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl alarm-active-overlay overflow-y-auto">
+    <div class="w-full max-w-2xl bg-[#111622] border-2 border-red-600 rounded-3xl shadow-2xl shadow-red-600/50 p-6 md:p-8 relative my-8">
+      
+      <!-- Top Alert Header -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-600/30 border border-red-500 text-red-400 text-xs font-bold uppercase tracking-widest siren-badge mb-3">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+          🚨 ALARM ACTIVE — UNSTOPPABLE SIREN RINGING
+        </div>
+        <h2 id="ringingAlarmLabel" class="text-2xl md:text-3xl font-extrabold text-white">
+          Morning Workout
+        </h2>
+        <p id="ringingAlarmReasonDisplay" class="text-sm text-gray-300 mt-2 bg-gray-900/80 p-3 rounded-xl border border-gray-800">
+          Reason: <span class="text-indigo-300 font-semibold italic">"Hit the gym for leg day before 9am meeting"</span>
+        </p>
+      </div>
+
+      <!-- Siren Audio Notice -->
+      <div class="mb-5 flex items-center justify-between bg-red-950/40 border border-red-900/50 rounded-xl px-4 py-2 text-xs text-red-300">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-red-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <span>Loud Web Audio Siren is active. Satisfy requirement to silence:</span>
+        </div>
+        <span id="ringingRequirementPill" class="font-bold text-white px-2 py-0.5 rounded bg-red-600/60">Reason or Photo</span>
+      </div>
+
+      <!-- Verification Tabs -->
+      <div class="flex border-b border-gray-800 mb-5 gap-2">
+        <button id="tabReasonBtn" onclick="switchAlarmTab('reason')" class="flex-1 py-2.5 px-4 font-bold text-sm text-center border-b-2 border-indigo-500 text-indigo-400 transition flex items-center justify-center gap-2">
+          🧠 1. Explain Purpose & Wakefulness
+        </button>
+        <button id="tabPhotoBtn" onclick="switchAlarmTab('photo')" class="flex-1 py-2.5 px-4 font-bold text-sm text-center border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition flex items-center justify-center gap-2">
+          📸 2. Upload / Snap Photo Proof
+        </button>
+      </div>
+
+      <!-- Tab Content 1: Reason Explanation -->
+      <div id="tabContentReason" class="space-y-4">
+        <p class="text-xs text-gray-400">
+          The AI needs to understand why you set this alarm. Speak or write clearly about what you are waking up to do.
+        </p>
+
+        <div class="relative">
+          <textarea id="userExplanationInput" rows="3" placeholder="Tell the AI: Why did you set this alarm and what is your plan right now?..." class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white text-sm focus:border-indigo-500 outline-none resize-none"></textarea>
+          
+          <!-- Speech to text button -->
+          <button type="button" onclick="startSpeechRecognition()" id="micBtn" title="Speak to Turn Off" class="absolute right-3 bottom-3 p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+          </button>
+        </div>
+
+        <button onclick="submitReasonVerification()" id="verifyReasonBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 font-bold text-white text-sm shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+          <span id="reasonSpinner" class="hidden animate-spin">⏳</span>
+          <span>Verify Reason & Silence Alarm</span>
+        </button>
+      </div>
+
+      <!-- Tab Content 2: Photo Verification -->
+      <div id="tabContentPhoto" class="hidden space-y-4">
+        <div class="bg-gray-900/90 p-3 rounded-xl border border-gray-800 text-xs flex items-center justify-between">
+          <span class="text-gray-400">Required Target Item:</span>
+          <span id="requiredTargetLabel" class="font-bold text-rose-400">Running shoes</span>
+        </div>
+
+        <!-- Camera / Image Preview Area -->
+        <div class="camera-container border border-gray-700">
+          <video id="cameraVideo" autoplay playsinline class="hidden"></video>
+          <canvas id="photoCanvas" class="hidden"></canvas>
+          <img id="imagePreview" class="hidden object-contain" alt="Captured proof" />
+          <div id="cameraPlaceholder" class="w-full h-full flex flex-col items-center justify-center p-6 text-center text-gray-500">
+            <svg class="w-12 h-12 mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <p class="text-xs">Camera stream or file preview will appear here</p>
+          </div>
+          <div id="scannerLine" class="scanner-line hidden"></div>
+        </div>
+
+        <!-- Camera & Upload Controls -->
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="startCamera()" id="btnStartCamera" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-gray-200 transition flex items-center justify-center gap-1.5">
+            📹 Open Camera
+          </button>
+          <button onclick="captureSnapshot()" id="btnCapture" class="hidden py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white transition flex items-center justify-center gap-1.5">
+            📸 Take Snapshot
+          </button>
+          <label class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-gray-200 transition flex items-center justify-center gap-1.5 cursor-pointer text-center">
+            📁 Upload Photo
+            <input type="file" id="photoFileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+          </label>
+        </div>
+
+        <button onclick="submitPhotoVerification()" id="verifyPhotoBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 font-bold text-white text-sm shadow-lg shadow-rose-600/30 transition flex items-center justify-center gap-2">
+          <span id="photoSpinner" class="hidden animate-spin">⏳</span>
+          <span>Verify Visual Proof & Silence Alarm</span>
+        </button>
+      </div>
+
+      <!-- AI Feedback Box -->
+      <div id="alarmFeedbackBox" class="hidden mt-4 p-3 rounded-xl text-xs font-medium border">
+        <!-- Injected dynamically -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-[#131722] border border-gray-700 rounded-2xl p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          ⚙️ AI & System Settings
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-white text-lg">&times;</button>
+      </div>
+      
+      <div class="space-y-4 text-sm">
+        <div>
+          <label class="block text-xs font-medium text-gray-300 mb-1">Google Gemini API Key</label>
+          <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full px-3.5 py-2.5 rounded-xl bg-gray-900 border border-gray-700 text-white font-mono text-xs focus:border-indigo-500 outline-none">
+          <p class="text-[11px] text-gray-400 mt-1">
+            Get a free key from <a href="https://aistudio.google.com/" target="_blank" class="text-indigo-400 underline">Google AI Studio</a>. (Leave blank to use intelligent local offline heuristics).
+          </p>
+        </div>
+
+        <button onclick="saveSettings()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-white text-xs transition">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript application -->
+  <script src="/app.js"></script>
+</body>
+</html>
