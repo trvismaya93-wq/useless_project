@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -15,6 +16,10 @@ from .ai_engine import AIVerificationEngine
 load_dotenv()
 
 app = FastAPI(title="WakeVerify AI Alarm Server", version="1.0.0")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(content=b"", media_type="image/x-icon")
 
 # Enable CORS for local testing
 app.add_middleware(
