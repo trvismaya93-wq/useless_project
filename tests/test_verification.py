@@ -7,9 +7,9 @@ from fastapi.testclient import TestClient
 # Add project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from backend.app import app
+from backend.app import app as test_app
 
-client = TestClient(app)
+client = TestClient(test_app)
 
 def test_status_endpoint():
     resp = client.get("/api/status")

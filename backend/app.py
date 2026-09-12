@@ -1,16 +1,21 @@
 import os
+import sys
 import json
 import uuid
 from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import Response
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from .ai_engine import AIVerificationEngine
+# Allow absolute import of sibling modules when run as a serverless function
+sys.path.insert(0, os.path.dirname(__file__))
+try:
+    from ai_engine import AIVerificationEngine
+except ImportError:
+    from .ai_engine import AIVerificationEngine
 
 # Load environment variables
 load_dotenv()
@@ -30,7 +35,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+# Vercel serverless: only /tmp is writable at runtime.
+# Locally, use the repo's data/ directory.
+_IS_VERCEL = os.environ.get("VERCEL") == "1"
+if _IS_VERCEL:
+    DATA_DIR = "/tmp/technova_data"
+else:
+    DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 os.makedirs(DATA_DIR, exist_ok=True)
 ALARMS_FILE = os.path.join(DATA_DIR, "alarms.json")
 HISTORY_FILE = os.path.join(DATA_DIR, "history.json")
@@ -152,7 +163,5 @@ async def verify_photo(target_description: str = Form(...), file: UploadFile = F
 def get_history():
     return load_json(HISTORY_FILE, [])
 
-# Static frontend assets
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-if os.path.exists(FRONTEND_DIR):
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+# NOTE: Static frontend files are served by Vercel's static build.
+# When running locally via run.py/uvicorn, the frontend is served separately.

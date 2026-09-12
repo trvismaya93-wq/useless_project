@@ -1,0 +1,14 @@
+# Exclude test files — Vercel scans for FastAPI 'app' variables
+# and gets confused by tests/test_verification.py which also imports app
+tests/
+data/
+__pycache__/
+*.pyc
+.env
+.vscode/
+*.bat
+run.py
+init_and_push.py
+push_to_github.py
+push_to_github.bat
+README.md
